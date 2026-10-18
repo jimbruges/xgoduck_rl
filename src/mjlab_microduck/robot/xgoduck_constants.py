@@ -89,8 +89,12 @@ actuators = FrictionDRBamActuatorCfg(
     vin_min=7.0,  # sag floor below sampled vin (7.4–8.0) so load can still drop V
     # mjlab applies delay through this buffer, not BAM JSON command_delay.
     # One physics step is 4 ms in all XgoDuck task configs.
-    delay_min_lag=1,
-    delay_max_lag=1,
+    # Real UNO Q runtime: the command reaches the servos ~5-25 ms after the state it
+    # was computed from (state up to 10 ms old, 20 ms policy tick, 10 ms MCU tick),
+    # so randomise 2-6 steps (8-24 ms) instead of a fixed 4 ms. Upstream Microduck
+    # randomises 3-6 steps of 5 ms for the same reason.
+    delay_min_lag=2,
+    delay_max_lag=6,
 )
 
 

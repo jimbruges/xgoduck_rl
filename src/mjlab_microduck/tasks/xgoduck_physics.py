@@ -2,11 +2,11 @@
 
 
 def configure_xgoduck_physics(cfg):
-    """Keep CAD mass/inertia fixed and apply a 4 ms actuator delay at 50 Hz.
+    """Keep CAD mass/inertia fixed; 4 ms physics steps at a 50 Hz policy rate.
 
-    BAM's JSON delay is identification metadata in mjlab. The actuator uses
-    delay_min_lag=delay_max_lag=1, so a 4 ms physics step makes the effective
-    command delay match 1910_m6.json without interpolation or extra filtering.
+    BAM's JSON delay (4 ms, 1910_m6.json) is identification metadata in mjlab. The
+    actuator delay itself is set in xgoduck_constants.py (delay_min/max_lag, in 4 ms
+    physics steps): 2-6 steps, to cover the real runtime's command pipeline.
     Five physics steps retain the existing 20 ms policy/control period.
     """
     cfg.events.pop("randomize_mass_inertia", None)
