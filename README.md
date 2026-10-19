@@ -7,7 +7,7 @@ Reinforcement-learning environments for training XgoDuck, a small biped whose ge
 This fork of [LuwuDynamics/xgoduck_rl](https://github.com/LuwuDynamics/xgoduck_rl) retrains the walk policy for an XgoDuck built with an Arduino UNO Q, the Luwu expansion board, a 2 × 18650 pack and a clip-on UNO Q cover. Upstream's model is about 27 g light and has its centre of mass too far forward for that build. On the robot, backward walking needed 9–10° of extra lean to hold.
 
 Companion forks:
-- [jimbruges/xgoduck_hardware](https://github.com/jimbruges/xgoduck_hardware): the UNO Q cover and the whole-robot SolidCraft assembly (`cad/uno_q_cover/xgoduck_assembly_with_cover.solidcraft`) that the mass placement below is taken from.
+- [jimbruges/xgoduck_hardware](https://github.com/jimbruges/xgoduck_hardware): the UNO Q cover and the [whole-robot SolidCraft assembly](https://github.com/jimbruges/xgoduck_hardware/blob/master/structure/assembly/xgoduck_full_assembly.solidcraft) ([notes](https://github.com/jimbruges/xgoduck_hardware/blob/master/docs/UNO_Q_COVER.md)) that the mass placement below is taken from.
 - [jimbruges/xgoduck_runtime_arduino](https://github.com/jimbruges/xgoduck_runtime_arduino) (branch `calibration-tools`): the runtime that loads these policies, with a **Walk policy** switch for A/B tests and a flight recorder that measures how well the servos follow.
 
 What changes, all in the Flat velocity (walk) task's robot model:
