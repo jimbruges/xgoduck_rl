@@ -2,6 +2,39 @@
 
 Reinforcement-learning environments for training XgoDuck, a small biped whose geometry and inertia differ from MicroDuck. Policies are trained with PPO on [mjlab](https://github.com/mujocolab/mjlab) (MuJoCo Warp) and exported to ONNX.
 
+## About this fork
+
+This fork of [LuwuDynamics/xgoduck_rl](https://github.com/LuwuDynamics/xgoduck_rl) retrains the walk policy for an XgoDuck built with an Arduino UNO Q, the Luwu expansion board, a 2 × 18650 pack and a clip-on UNO Q cover. Upstream's model is about 27 g light and has its centre of mass too far forward for that build. On the robot, backward walking needed 9–10° of extra lean to hold.
+
+Companion forks:
+- [jimbruges/xgoduck_hardware](https://github.com/jimbruges/xgoduck_hardware): the UNO Q cover and the whole-robot SolidCraft assembly (`cad/uno_q_cover/xgoduck_assembly_with_cover.solidcraft`) that the mass placement below is taken from.
+- [jimbruges/xgoduck_runtime_arduino](https://github.com/jimbruges/xgoduck_runtime_arduino) (branch `calibration-tools`): the runtime that loads these policies, with a **Walk policy** switch for A/B tests and a flight recorder that measures how well the servos follow.
+
+What changes, all in the Flat velocity (walk) task's robot model:
+
+| | Upstream | This fork | Why |
+|---|---|---|---|
+| Total mass | 798 g | 825 g | Weighed on the assembled robot |
+| Trunk inertial | 228.6 g at x −13.3, z −23.6 mm | 255.9 g at x −22.7, z −27.5 mm | Battery (~95 g) inside the body at x −20, z −31 mm and the UNO Q, board, cover and connectors (~48 g) behind it at x −51, z −31 mm, positions from the CAD assembly; inertia from the parallel-axis theorem |
+| Whole-robot CoM (trunk frame, zero pose) | x +10.3 mm | x +6.6 mm | Follows from the trunk change |
+| Actuator delay | 1 physics step (4 ms) | 2–6 steps (8–24 ms), randomised | On the UNO Q runtime a command reaches the servos about 5–25 ms after the state it was computed from |
+
+The existing ±15 mm centre-of-mass randomisation covers the remaining uncertainty: the CAD has no real part masses, so the 95/48 g split is an estimate. Get-up, pick and the other tasks share the robot model but have not been retrained.
+
+Branches:
+- `cad-battery` (current): the table above. Exported as `xgoduck_walk_cadbattery.onnx` in the runtime.
+- `real-mass-com`: the first retrain, which put all ~143 g behind the body at x −55 mm (CoM x +2.3 mm). The CAD check showed that over-corrects. Exported as `xgoduck_walk_realcom.onnx`.
+
+Both were trained on Hugging Face Jobs, about 3 h on one L4:
+
+```bash
+uv run hf auth login
+uv run train Mjlab-Velocity-Flat-XgoDuck --env.scene.num-envs 4096 --agent.max_iterations 4000 \
+    --hf-jobs --no-wandb --namespace <you> --run-name xgoduck-walk-cadbattery
+```
+
+Then download the last `model_3999.pt` from the checkpoint repo and export it as described under [ONNX](#onnx).
+
 ## Acknowledgments
 
 This repository is a downstream project based on [microduck_rl](https://github.com/pollen-robotics/microduck_rl) by [Pollen Robotics](https://github.com/pollen-robotics). Training runs on [mjlab](https://github.com/mujocolab/mjlab). Joint actuation uses [BAM](https://github.com/Rhoban/bam) (Better Actuator Models) from Rhoban.
