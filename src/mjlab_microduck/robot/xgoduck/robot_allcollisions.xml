@@ -40,8 +40,8 @@
   <worldbody>
     <body name="trunk_base" pos="0 0 0.129394" quat="1 0 0 0" childclass="microduck">
       <freejoint name="trunk_base_freejoint"/>
-      <!-- Real robot: total 825 g. Battery (~95 g) inside the body at x -20, z -31 mm and Uno Q + shield + cover (~48 g) behind it at x -51, z -31 mm, positions from the CAD assembly; see jimbruges/xgoduck_runtime_arduino FORK.md. Was mass 0.22862 at x -13.3, z -23.6 mm. -->
-      <inertial pos="-0.022679 -5.584099e-06 -0.027546" mass="0.255921" fullinertia="8.111736e-05 1.612121e-04 1.403352e-04 3.854214e-08 -2.825551e-05 3.504560e-08" />
+      <!-- Real robot: ~836 g (825 g weighed with the clip-on cover, +11 g for the screw-on back cover and battery-mount bosses). Battery (~95 g) inside the body at x -20, z -31 mm; mount bosses (~8 g) at x -30, z -27 mm; Uno Q + shield (~35 g) at x -43, z -31 mm; back cover (~16 g) at x -53, z -37 mm. Positions from the jimbruges/xgoduck_hardware CAD assembly. Was mass 0.22862 at x -13.3, z -23.6 mm. -->
+      <inertial pos="-0.022365 -5.353974e-06 -0.027954" mass="0.266921" fullinertia="8.232229e-05 1.548088e-04 1.327271e-04 3.809363e-08 -3.096385e-05 3.562807e-08" />
       <geom type="mesh" class="visual" mesh="trunk_base"/>
       <geom type="mesh" name="trunk_collision" class="collision" mesh="trunk_base"/>
       <site group="3" name="imu" pos="-0.013982 -1.3e-05 -0.023873"/>

@@ -22,7 +22,8 @@ What changes, all in the Flat velocity (walk) task's robot model:
 The existing ±15 mm centre-of-mass randomisation covers the remaining uncertainty: the CAD has no real part masses, so the 95/48 g split is an estimate. Get-up, pick and the other tasks share the robot model but have not been retrained.
 
 Branches:
-- `cad-battery` (current): the table above. Exported as `xgoduck_walk_cadbattery.onnx` in the runtime.
+- `back-cover` (current): the screw-on back cover design. The UNO Q stack sits 6.9 mm closer to the body, the cover weighs 16 g (the clip-on one 13 g), and the battery mount's screw bosses add 8 g. Total about 836 g (estimated: 825 g weighed with the clip-on cover, plus 11 g). Trunk 266.9 g at x −22.4, z −28.0 mm; whole-robot CoM x +6.3 mm. Exported as `xgoduck_walk_backcover.onnx`.
+- `cad-battery`: the table above, for the clip-on cover. Exported as `xgoduck_walk_cadbattery.onnx` in the runtime.
 - `real-mass-com`: the first retrain, which put all ~143 g behind the body at x −55 mm (CoM x +2.3 mm). The CAD check showed that over-corrects. Exported as `xgoduck_walk_realcom.onnx`.
 
 Both were trained on Hugging Face Jobs, about 3 h on one L4:
