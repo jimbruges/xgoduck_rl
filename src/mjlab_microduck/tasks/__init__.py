@@ -341,6 +341,27 @@ def _xgoduck_velocity_cfg(**kwargs):
         XGODUCK_STAND_Z + 0.005,
     )
     cfg.events["foot_friction"].params["ranges"] = (0.4, 1.5)
+    # Resample each episode (upstream samples once at startup), so the curriculum below
+    # reaches every environment; both feet share one value.
+    cfg.events["foot_friction"].mode = "reset"
+    # Slippery floors: printed feet on tile or wood are about 0.2-0.35. Widen to 0.2
+    # once a gait exists (iter 1000); starting that low slows early learning. The feet
+    # have contact priority over the floor, so the foot's friction is the one used.
+    cfg.curriculum["foot_friction_range"] = CurriculumTermCfg(
+        func=microduck_mdp.event_range_curriculum,
+        params={
+            "event_name": "foot_friction",
+            "range_stages": [
+                {"step": 0, "range": (0.4, 1.5)},
+                {"step": 1000 * XgoduckRlCfg.num_steps_per_env, "range": (0.2, 1.5)},
+            ],
+        },
+    )
+    # CoM: keep the +-15 mm trunk ramp, and let x go a further 8 mm backward. The
+    # trunk is about a third of the mass, so the whole robot's CoM varies about -7 to
+    # +5 mm around the modelled one: newly printed robots sit a little further back.
+    if "com_range" in cfg.curriculum:
+        cfg.curriculum["com_range"].params["x_back_extra"] = 0.008
     if "push_robot" in cfg.events:
         cfg.events["push_robot"].params["velocity_range"] = {
             "x": (-0.2, 0.2),

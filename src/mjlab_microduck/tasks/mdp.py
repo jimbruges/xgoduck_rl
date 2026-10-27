@@ -3530,6 +3530,7 @@ def com_range_curriculum(
     env_ids: torch.Tensor,
     event_name: str,
     range_stages: list[dict],
+    x_back_extra: float = 0.0,
 ) -> torch.Tensor:
     """Update CoM randomization range based on training progress.
 
@@ -3561,8 +3562,34 @@ def com_range_curriculum(
         if env.common_step_counter > stage["step"]:
             current_range = stage["range"]
 
-    event_cfg.params["ranges"] = (-current_range, current_range)
+    if x_back_extra:
+        # Per-axis: x reaches x_back_extra further backward (-x) than forward, for a
+        # robot whose real CoM may sit behind the modelled one; y and z stay symmetric.
+        event_cfg.params["ranges"] = {0: (-current_range - x_back_extra, current_range),
+                                      1: (-current_range, current_range),
+                                      2: (-current_range, current_range)}
+    else:
+        event_cfg.params["ranges"] = (-current_range, current_range)
     return torch.tensor([current_range])
+
+
+def event_range_curriculum(
+    env: ManagerBasedRlEnv,
+    env_ids: torch.Tensor,
+    event_name: str,
+    range_stages: list[dict],
+) -> torch.Tensor:
+    """Set an event's (lo, hi) ``ranges`` by training step, e.g. to widen foot friction
+    once a gait exists. range_stages: [{"step": int, "range": (lo, hi)}, ...].
+    Returns the current low end (for logging)."""
+    del env_ids
+    event_cfg = env.event_manager.get_term_cfg(event_name)
+    current = range_stages[0]["range"]
+    for stage in range_stages:
+        if env.common_step_counter > stage["step"]:
+            current = stage["range"]
+    event_cfg.params["ranges"] = tuple(current)
+    return torch.tensor([current[0]])
 
 
 def slope_move_masks(distance: "torch.Tensor", size_x: float):
